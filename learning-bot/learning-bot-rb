@@ -13,6 +13,11 @@ bot.message(with_text: 'Ping!') do |event|
 end
 
 # Commands
+# bot.command(:command_name, description: '<description',
+#     usage: 'Useful info on how to use', min_args: 1) do |_event, var|
+#     # stuff here
+# end
+
 bot.command(:echo, description: 'repeat whatever u say', 
     usage: 'echo <text>', min_args: 1) do |_event, *echo|
     echo.join(' ')
@@ -24,9 +29,17 @@ bot.command(:repass, description: 'Create password',
     Base64.encode64(pw)
 end
 
-# bot.command(:command_name, description: '<description',
-#     usage: 'Useful info on how to use', min_args: 1) do |_event, var|
-#     # stuff here
-# end
+bot.command(:diablo, description: 'Diablo info',
+    usage: 'diablo <class>', min_args: 1) do |_event, *req|
+    D3_DH_noob_url = "http://www.diablofans.com/builds?filter-class=4"
+    D3_DH_pleb_url = ""
+
+    gclass = req.join('')
+    case
+    when gclass.match(/DH|DemonHunter/)
+        "Beginner = " + D3_DH_noob_url
+        "Intermediate = " + D3_DH_pleb_url
+    end
+end
 
 bot.run
