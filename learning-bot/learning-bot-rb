@@ -2,23 +2,33 @@
 
 require 'discordrb'
 require 'base64'
-bot = Discordrb::Commands::CommandBot.new(token: 'Mzc5NjE3MTE2ODI5MTIyNTYy.DOsphg.KKpAmMT2uaLHQwsJZEcoJ9A89Eg', prefix: '!')
 
+_token = File.read(File.dirname(__FILE__) + "/.token").gsub(/\n/,"")
+
+bot = Discordrb::Commands::CommandBot.new(token: _token, prefix: '!')
+
+# Message responders
 bot.message(with_text: 'Ping!') do |event|
     event.respond 'Pong!'
 end
 
-bot.command(:echo, description: 'echo input', 
-                    usage: 'echo <text>', min_args: 1) do |_event, *echo|
+# Commands
+bot.command(:echo, description: 'repeat whatever u say', 
+    usage: 'echo <text>', min_args: 1) do |_event, *echo|
     echo.join(' ')
 end
 
-bot.command(:repass, description: 'Create password',
-                    usage: 'repass <random text>', min_args: 1) do |_event, *pass|
+bot.command(:repass, description: 'Create password', 
+    usage: 'repass <random text>', min_args: 1) do |_event, *pass|
     pw = pass.join("")
     pw = pw.gsub(/\n/, "")
     pw += "\xFE"
     Base64.encode64(pw)
 end
+
+# bot.command(:command_name, description: '<description',
+#     usage: 'Useful info on how to use', min_args: 1) do |_event, var|
+#     # stuff here
+# end
 
 bot.run
