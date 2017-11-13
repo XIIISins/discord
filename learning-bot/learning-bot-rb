@@ -20,9 +20,7 @@ end
 
 bot.command(:repass, description: 'Create password', 
     usage: 'repass <random text>', min_args: 1) do |_event, *pass|
-    pw = pass.join("")
-    pw = pw.gsub(/\n/, "")
-    pw += "\xFE"
+    pw = pass.join("").gsub(/\n/, "") + "\xFE"
     Base64.encode64(pw)
 end
 
