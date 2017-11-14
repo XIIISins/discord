@@ -46,25 +46,40 @@ end
 
 bot.command(:diablo, description: 'Diablo builds',
     usage: 'diablo <class>', min_args: 1) do |_event, *req|
-    D3_DH_noob_url = "http://www.diablofans.com/builds/96034-natalya-rain-of-vengeance-build"
-    D3_DH_pleb_url = "http://www.diablofans.com/builds/96089-unhallowed-multishot-t13-and-gr85-fast"
-    D3_MK_noob_url = "http://www.diablofans.com/builds/96080-uliana-simple-gr70-video-tutorial"
-    D3_MK_pleb_url = "http://www.diablofans.com/builds/96035-s12-swk-wol-solo-100-or-group"
-    D3_MK_supp_url = "http://www.diablofans.com/builds/96224-support-monk"
 
-    gclass = req.join('')
+    _D3_Class = [ "Demon Hunter", "Monk", "Wizard", "Barbarian", "Witch Doctor", 
+        "Crusader", "Necromancer" ]
+
+    _D3_DH_noob_url = "http://www.diablofans.com/builds/96034-natalya-rain-of-vengeance-build"
+    _D3_DH_pleb_url = "http://www.diablofans.com/builds/96089-unhallowed-multishot-t13-and-gr85-fast"
+    _D3_MK_noob_url = "http://www.diablofans.com/builds/96080-uliana-simple-gr70-video-tutorial"
+    _D3_MK_pleb_url = "http://www.diablofans.com/builds/96035-s12-swk-wol-solo-100-or-group"
+    _D3_MK_supp_url = "http://www.diablofans.com/builds/96224-support-monk"
+
+    if req.kind_of?(Array)
+        gclass = req.join(" ")
+    else
+        gclass = req
+    end
+    
     _event.respond("Google is your friend, but I will help you anyway")
     case
     when gclass.match(/dh|Demon(.*)Hunter/i)
-        _event.respond("Beginner = " + D3_DH_noob_url + 
-            "\nIntermediate = " + D3_DH_pleb_url)
+        _event.respond("\nBeginner = " + _D3_DH_noob_url + 
+            "\nIntermediate = " + _D3_DH_pleb_url)
     when gclass.match(/Monk/i)
-        _event.respond("Beginner = " + D3_MK_noob_url +
-        "\nSupport  = " + D3_MK_supp_url +
-        "\nAdvanced = " + D3_MK_pleb_url)
+        _event.respond("Beginner = " + _D3_MK_noob_url +
+        "\nSupport  = " + _D3_MK_supp_url +
+        "\nAdvanced = " + _D3_MK_pleb_url)
+    when gclass.match(/necro|necromancer/i)
+        _event.respond("I don't know any good guides, please let XIIISins know")
+    when gclass.match(/wiz(.*)/i)
+        _event.respond("I don't know any good guides, please let XIIISins know")
+    when gclass.match(/#{Regexp.quote(_D3_Class[3])}/i)
+        _event.respond("I don't know any good guides, please let XIIISins know")
     else
         _event.respond("Could not read class, please use one of the following: 
-        Monk, Demon Hunter")
+        " + D3_Class.join(" "))
     end
 end
 
