@@ -5,12 +5,23 @@ require 'base64'
 
 _token = File.read(File.dirname(__FILE__) + "/.token").gsub(/\n/,"")
 
-bot = Discordrb::Commands::CommandBot.new(token: _token, prefix: '!')
+bot = Discordrb::Commands::CommandBot.new(token: _token, prefix: '!', 
+    advanced_functionality: true)
+rlimit = Discordrb::Commands::SimpleRateLimiter.new
 
 # Message responders
 bot.message(with_text: 'Ping!') do |event|
     event.respond 'Pong!'
 end
+
+## Put back the table
+rlimit.bucket :table, delay: 5
+bot.message(containing: ['(╯°□°）╯︵ ┻━┻', '(ﾉಥ益ಥ）ﾉ﻿ ┻━┻', '(ノಠ益ಠ)ノ彡┻━┻']
+    ) do |event|
+  next if rlimit.rate_limited?(:table, event.channel)
+  event.respond '┬─┬ノ( º _ ºノ)'
+end
+
 
 # Commands
 # bot.command(:command_name, description: '<description',
@@ -18,7 +29,11 @@ end
 #     # stuff here
 # end
 
-bot.command(:echo, description: 'repeat whatever u say', 
+bot.bucket :echo, limit: 10, time_span: 60, delay: 6
+
+bot.command(:echo, bucket: :echo, 
+    rate_limit_message: 'Command called too soon, try again in %time% seconds', 
+    description: 'repeat whatever u say', 
     usage: 'echo <text>', min_args: 1) do |_event, *echo|
     echo.join(' ')
 end
@@ -29,16 +44,27 @@ bot.command(:repass, description: 'Create password',
     Base64.encode64(pw)
 end
 
-bot.command(:diablo, description: 'Diablo info',
+bot.command(:diablo, description: 'Diablo builds',
     usage: 'diablo <class>', min_args: 1) do |_event, *req|
-    D3_DH_noob_url = "http://www.diablofans.com/builds?filter-class=4"
-    D3_DH_pleb_url = ""
+    D3_DH_noob_url = "http://www.diablofans.com/builds/96034-natalya-rain-of-vengeance-build"
+    D3_DH_pleb_url = "http://www.diablofans.com/builds/96089-unhallowed-multishot-t13-and-gr85-fast"
+    D3_MK_noob_url = "http://www.diablofans.com/builds/96080-uliana-simple-gr70-video-tutorial"
+    D3_MK_pleb_url = "http://www.diablofans.com/builds/96035-s12-swk-wol-solo-100-or-group"
+    D3_MK_supp_url = "http://www.diablofans.com/builds/96224-support-monk"
 
     gclass = req.join('')
+    _event.respond("Google is your friend, but I will help you anyway")
     case
-    when gclass.match(/DH|DemonHunter/)
-        "Beginner = " + D3_DH_noob_url
-        "Intermediate = " + D3_DH_pleb_url
+    when gclass.match(/dh|Demon(.*)Hunter/i)
+        _event.respond("Beginner = " + D3_DH_noob_url + 
+            "\nIntermediate = " + D3_DH_pleb_url)
+    when gclass.match(/Monk/i)
+        _event.respond("Beginner = " + D3_MK_noob_url +
+        "\nSupport  = " + D3_MK_supp_url +
+        "\nAdvanced = " + D3_MK_pleb_url)
+    else
+        _event.respond("Could not read class, please use one of the following: 
+        Monk, Demon Hunter")
     end
 end
 
