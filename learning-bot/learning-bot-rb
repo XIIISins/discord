@@ -9,6 +9,8 @@ bot = Discordrb::Commands::CommandBot.new(token: _token, prefix: '!') #,
     # advanced_functionality: false)
 rlimit = Discordrb::Commands::SimpleRateLimiter.new
 
+CreatorB = 'XIIISins'
+
 # Message responders
 bot.message(with_text: 'Ping!') do |_event|
     _event.respond 'Pong!'
@@ -70,18 +72,33 @@ bot.command(:diablo, description: 'Diablo builds',
     },{ 
       optn: ["Barbarian", "barb"],
       func: Proc.new { 
-        "I don't know any good guides, please let XIIISins know" 
+        "I don't know guides for this class, If you know a good one let " + 
+        CreatorB + "know." 
       } 
+    },{
+      optn: ["Wizard", "wiz"],
+      func: Proc.new {
+        "I don't know guides for this class, If you know a good one let " + 
+        CreatorB + "know."
+      }
     },{ 
       optn: ["Witch Doctor", "WD"],
       func: Proc.new { 
-        "I don't know any good guides, please let XIIISins know" 
+        "I don't know guides for this class, If you know a good one let " + 
+        CreatorB + "know." 
       } 
     },{ 
       optn: ["Crusader", "crus"],
       func: Proc.new { 
-        "I don't know any good guides, please let XIIISins know" 
-      } 
+        "I don't know guides for this class, If you know a good one let " + 
+        CreatorB + "know." 
+      }
+    },{
+      optn: ["Necromancer", "necro"],
+      func: Proc.new {
+       "I don't know guides for this class, If you know a good one let " + 
+       CreatorB + "know."  
+      }
     }]
 
     gclass = req.kind_of?(Array) ? req.join(" ") : req
@@ -89,7 +106,8 @@ bot.command(:diablo, description: 'Diablo builds',
     response = _D3_Class.map { |c| c[:func].call if gclass.match( Regexp.new(/\s?(#{c[:optn].join("|")})\s?/i) ) }.join(" ")
 
     # if response.to_s.empty?
-    if response.match(/[[:space:]]/)
+    # if response.match(/^[[:space:]]*$/)
+    if response =~ /^\s*$/ || response.to_s.empty?
       _event.respond(
         "Could not read class, please use one of the following:\n" + 
         _D3_Class.map { |c| c[:optn].join(", ")}.join(", ")
