@@ -56,6 +56,9 @@ bot.command(:diablo, description: 'Diablo builds',
     _D3_MK_advanced_url = "http://www.diablofans.com/builds/96035-s12-swk-wol-solo-100-or-group"
     _D3_MK_supp_url = "http://www.diablofans.com/builds/96224-support-monk"
     
+    _D3_Unkown_Class = "I don't know guides for this class, If you know a good one let " +
+      CreatorB + "know."
+
     _D3_Class = [{ 
       optn: ["Demon Hunter", "DH", ],
       func: Proc.new { 
@@ -71,10 +74,11 @@ bot.command(:diablo, description: 'Diablo builds',
       } 
     },{ 
       optn: ["Barbarian", "barb"],
-      func: Proc.new { 
-        "I don't know guides for this class, If you know a good one let " + 
-        CreatorB + "know." 
-      } 
+      func: "#{_D3_Unkown_Class}"
+      # func: Proc.new { 
+      #   "I don't know guides for this class, If you know a good one let " + 
+      #   CreatorB + "know." 
+      # } 
     },{
       optn: ["Wizard", "wiz"],
       func: Proc.new {
@@ -115,6 +119,30 @@ bot.command(:diablo, description: 'Diablo builds',
     else 
       _event.respond(response)
     end
+end
+
+bot.command(:destiny, description: 'Destiny2 info',
+  usage: 'destiny <cmd>', min_args: 1) do |_event, *arg|
+    _D2_GearGuide = 'http://dulfy.net/2017/11/01/destiny-2-power-progression-guide/'
+    _D2_Args = [{
+      arg: ["Power Guide", "PG"],
+      func: Proc.new {
+        "Power Progression guide: " + _D2_GearGuide
+      }
+    }]
+    
+    args = arg.kind_of?(Array) ? arg.join(" ") : arg
+
+    response = _D2_Args.map { |a| a[:func].call if args.match( Regexp.new(/\s?(#{a[:arg].join("|")})\s?/i) ) }.join(" ")
+
+    if response =~ /^\s*$/ || response.to_s.empty?
+      _event.respond(
+        "Unknown command, please use one of the following:\n" + 
+        _D2_Args.map { |a| a[:func].join(", ")}.join(", ")
+      )
+    else
+      _event.respond(response)
+  end
 end
 
 bot.run
