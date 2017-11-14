@@ -47,39 +47,43 @@ end
 bot.command(:diablo, description: 'Diablo builds',
     usage: 'diablo <class>', min_args: 1) do |_event, *req|
 
-    _D3_Class = [ "Demon Hunter", "Monk", "Wizard", "Barbarian", "Witch Doctor", 
-        "Crusader", "Necromancer" ]
+    _D3_ClassLong = [ "Demon Hunter", "Monk", "Wizard", "Barbarian", 
+        "Witch Doctor", "Crusader", "Necromancer" ]
+    _D3_ClassShort = [ "DH" , "wiz", "barb", "WD", "crus", "sader", "necro" ]
 
-    _D3_DH_noob_url = "http://www.diablofans.com/builds/96034-natalya-rain-of-vengeance-build"
-    _D3_DH_pleb_url = "http://www.diablofans.com/builds/96089-unhallowed-multishot-t13-and-gr85-fast"
-    _D3_MK_noob_url = "http://www.diablofans.com/builds/96080-uliana-simple-gr70-video-tutorial"
-    _D3_MK_pleb_url = "http://www.diablofans.com/builds/96035-s12-swk-wol-solo-100-or-group"
+    _D3_DH_beginner_url = "http://www.diablofans.com/builds/96034-natalya-rain-of-vengeance-build"
+    _D3_DH_intermediate_url = "http://www.diablofans.com/builds/96089-unhallowed-multishot-t13-and-gr85-fast"
+    _D3_MK_beginner_url = "http://www.diablofans.com/builds/96080-uliana-simple-gr70-video-tutorial"
+    _D3_MK_advanced_url = "http://www.diablofans.com/builds/96035-s12-swk-wol-solo-100-or-group"
     _D3_MK_supp_url = "http://www.diablofans.com/builds/96224-support-monk"
 
     if req.kind_of?(Array)
         gclass = req.join(" ")
-    else
+1    else
         gclass = req
     end
-    
-    _event.respond("Google is your friend, but I will help you anyway")
+
     case
-    when gclass.match(/dh|Demon(.*)Hunter/i)
-        _event.respond("\nBeginner = " + _D3_DH_noob_url + 
-            "\nIntermediate = " + _D3_DH_pleb_url)
-    when gclass.match(/Monk/i)
-        _event.respond("Beginner = " + _D3_MK_noob_url +
+    when gclass.match(/#{Regexp.quote(_D3_ClassLong[0])}|#{Regexp.quote(_D3_ClassShort[0])}/i) # DH
+        _event.respond("\nBeginner = " + _D3_DH_beginner_url + 
+            "\nIntermediate = " + _D3_DH_intermediate_url)
+    when gclass.match(/#{Regexp.quote(_D3_ClassLong[1])}/i) # Monk
+        _event.respond("Beginner = " + _D3_MK_beginner_url +
         "\nSupport  = " + _D3_MK_supp_url +
-        "\nAdvanced = " + _D3_MK_pleb_url)
-    when gclass.match(/necro|necromancer/i)
+        "\nAdvanced = " + _D3_MK_advanced_url)
+    when gclass.match(/#{Regexp.quote(_D3_ClassLong[2])}|#{Regexp.quote(_D3_ClassShort[1])}/i) # Wizard
         _event.respond("I don't know any good guides, please let XIIISins know")
-    when gclass.match(/wiz(.*)/i)
+    when gclass.match(/#{Regexp.quote(_D3_ClassLong[3])}|#{Regexp.quote(_D3_ClassShort[2])}/i) # Barbarian
         _event.respond("I don't know any good guides, please let XIIISins know")
-    when gclass.match(/#{Regexp.quote(_D3_Class[3])}/i)
+    when gclass.match(/#{Regexp.quote(_D3_ClassLong[4])}|#{Regexp.quote(_D3_ClassShort[3])}/i) # WD
+        _event.respond("I don't know any good guides, please let XIIISins know")
+    when gclass.match(/#{Regexp.quote(_D3_ClassLong[5])}|#{Regexp.quote(_D3_ClassShort[4])}|#{Regexp.quote(_D3_ClassShort[5])}/i) # Crus
+        _event.respond("I don't know any good guides, please let XIIISins know")
+    when gclass.match(/#{Regexp.quote(_D3_ClassLong[6])}|#{Regexp.quote(_D3_ClassShort[6])}/i) # Necro
         _event.respond("I don't know any good guides, please let XIIISins know")
     else
-        _event.respond("Could not read class, please use one of the following: 
-        " + D3_Class.join(" "))
+        _event.respond("Could not read class, please use one of the following:\n" + 
+            _D3_ClassLong.join(", "))
     end
 end
 
