@@ -5,21 +5,21 @@ require 'base64'
 
 _token = File.read(File.dirname(__FILE__) + "/.token").gsub(/\n/,"")
 
-bot = Discordrb::Commands::CommandBot.new(token: _token, prefix: '!', 
-    advanced_functionality: true)
+bot = Discordrb::Commands::CommandBot.new(token: _token, prefix: '!') #, 
+    # advanced_functionality: false)
 rlimit = Discordrb::Commands::SimpleRateLimiter.new
 
 # Message responders
-bot.message(with_text: 'Ping!') do |event|
-    event.respond 'Pong!'
+bot.message(with_text: 'Ping!') do |_event|
+    _event.respond 'Pong!'
 end
 
 ## Put back the table
 rlimit.bucket :table, delay: 5
 bot.message(containing: ['(╯°□°）╯︵ ┻━┻', '(ﾉಥ益ಥ）ﾉ﻿ ┻━┻', '(ノಠ益ಠ)ノ彡┻━┻']
-    ) do |event|
+    ) do |_event|
   next if rlimit.rate_limited?(:table, event.channel)
-  event.respond '┬─┬ノ( º _ ºノ)'
+  _event.respond '┬─┬ノ( º _ ºノ)'
 end
 
 
@@ -35,7 +35,7 @@ bot.command(:echo, bucket: :echo,
     rate_limit_message: 'Command called too soon, try again in %time% seconds', 
     description: 'repeat whatever u say', 
     usage: 'echo <text>', min_args: 1) do |_event, *echo|
-    echo.join(' ')
+    _event.respond(echo.join(' '))
 end
 
 bot.command(:repass, description: 'Create password', 
@@ -88,10 +88,11 @@ bot.command(:diablo, description: 'Diablo builds',
 
     response = _D3_Class.map { |c| c[:func].call if gclass.match( Regexp.new(/\s?(#{c[:optn].join("|")})\s?/i) ) }.join(" ")
 
-    if response.to_s.empty?
+    # if response.to_s.empty?
+    if response.match(/[[:space:]]/)
       _event.respond(
-        "Could not read class, please use one of the following: " + 
-        _D3_Class.map { |c| c[:optn].join(" ")}.join(" ")
+        "Could not read class, please use one of the following:\n" + 
+        _D3_Class.map { |c| c[:optn].join(", ")}.join(", ")
       )
     else 
       _event.respond(response)
