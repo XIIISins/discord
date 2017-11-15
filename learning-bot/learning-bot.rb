@@ -25,14 +25,14 @@ bot.message(containing: ['(╯°□°）╯︵ ┻━┻', '(ﾉಥ益ಥ）ﾉ�
 end
 
 
-# Commands
+# Start command definition
 # bot.command(:command_name, description: '<description',
 #     usage: 'Useful info on how to use', min_args: 1) do |_event, var|
 #     # stuff here
 # end
 
+# Echo
 bot.bucket :echo, limit: 10, time_span: 60, delay: 6
-
 bot.command(:echo, bucket: :echo, 
     rate_limit_message: 'Command called too soon, try again in %time% seconds', 
     description: 'repeat whatever u say', 
@@ -40,13 +40,14 @@ bot.command(:echo, bucket: :echo,
     _event.respond(echo.join(' '))
 end
 
-bot.command(:repass, description: 'Create password', 
+# Password
+bot.command(:repass, description: 'hash whatever string u pass as an argument', 
     usage: 'repass <random text>', min_args: 1) do |_event, *pass|
     pw = pass.join("").gsub(/\n/, "") + "\xFE"
     _event.respond(Base64.encode64(pw))
 end
 
-bot.command(:diablo, description: 'Diablo builds',
+bot.command(:diablo, description: 'Diablo builds, info and other stuff',
     usage: 'diablo <class>', min_args: 1) do |_event, *req|
     # Demon Hunter
     _D3_DH_beginner_url = "http://www.diablofans.com/builds/96034-natalya-rain-of-vengeance-build"
@@ -56,58 +57,38 @@ bot.command(:diablo, description: 'Diablo builds',
     _D3_MK_advanced_url = "http://www.diablofans.com/builds/96035-s12-swk-wol-solo-100-or-group"
     _D3_MK_supp_url = "http://www.diablofans.com/builds/96224-support-monk"
     
-    _D3_Unkown_Class = "I don't know guides for this class, If you know a good one let " +
-      CreatorB + "know."
+    _D3_Unknown_Class = "I don't know guides for this class, If you know a good one let " +
+      CreatorB + " know."
 
     _D3_Class = [{ 
       optn: ["Demon Hunter", "DH", ],
-      func: Proc.new { 
-          "Beginner = " + _D3_DH_beginner_url + 
+      func: "Beginner = " + _D3_DH_beginner_url + 
           "\nIntermediate = " + _D3_DH_intermediate_url 
-      }
     },{ 
       optn: ["Monk"],
-      func: Proc.new { 
-          "Beginner = " + _D3_MK_beginner_url +
+      func: "Beginner = " + _D3_MK_beginner_url +
           "\nSupport  = " + _D3_MK_supp_url +
-          "\nAdvanced = " + _D3_MK_advanced_url 
-      } 
+          "\nAdvanced = " + _D3_MK_advanced_url
     },{ 
       optn: ["Barbarian", "barb"],
-      func: "#{_D3_Unkown_Class}"
-      # func: Proc.new { 
-      #   "I don't know guides for this class, If you know a good one let " + 
-      #   CreatorB + "know." 
-      # } 
+      func: _D3_Unknown_Class
     },{
       optn: ["Wizard", "wiz"],
-      func: Proc.new {
-        "I don't know guides for this class, If you know a good one let " + 
-        CreatorB + "know."
-      }
+      func: _D3_Unknown_Class
     },{ 
       optn: ["Witch Doctor", "WD"],
-      func: Proc.new { 
-        "I don't know guides for this class, If you know a good one let " + 
-        CreatorB + "know." 
-      } 
+      func: _D3_Unknown_Class
     },{ 
       optn: ["Crusader", "crus"],
-      func: Proc.new { 
-        "I don't know guides for this class, If you know a good one let " + 
-        CreatorB + "know." 
-      }
+      func: _D3_Unknown_Class
     },{
       optn: ["Necromancer", "necro"],
-      func: Proc.new {
-       "I don't know guides for this class, If you know a good one let " + 
-       CreatorB + "know."  
-      }
+      func:_D3_Unknown_Class  
     }]
 
     gclass = req.kind_of?(Array) ? req.join(" ") : req
 
-    response = _D3_Class.map { |c| c[:func].call if gclass.match( Regexp.new(/\s?(#{c[:optn].join("|")})\s?/i) ) }.join(" ")
+    response = _D3_Class.map { |c| c[:func] if gclass.match( Regexp.new(/\s?(#{c[:optn].join("|")})\s?/i) ) }.join(" ")
 
     # if response.to_s.empty?
     # if response.match(/^[[:space:]]*$/)
@@ -126,23 +107,38 @@ bot.command(:destiny, description: 'Destiny2 info',
     _D2_GearGuide = 'http://dulfy.net/2017/11/01/destiny-2-power-progression-guide/'
     _D2_Args = [{
       arg: ["Power Guide", "PG"],
-      func: Proc.new {
-        "Power Progression guide: " + _D2_GearGuide
-      }
+      func: "Power Progression guide: " + _D2_GearGuide
     }]
     
     args = arg.kind_of?(Array) ? arg.join(" ") : arg
 
-    response = _D2_Args.map { |a| a[:func].call if args.match( Regexp.new(/\s?(#{a[:arg].join("|")})\s?/i) ) }.join(" ")
+    response = _D2_Args.map { |a| a[:func] if args.match( Regexp.new(/\s?(#{a[:arg].join("|")})\s?/i) ) }.join(" ")
 
     if response =~ /^\s*$/ || response.to_s.empty?
       _event.respond(
         "Unknown command, please use one of the following:\n" + 
-        _D2_Args.map { |a| a[:func].join(", ")}.join(", ")
+        _D2_Args.map { |a| a[:arg].join(", ")}.join(", ")
       )
     else
       _event.respond(response)
   end
 end
 
+bot.command(:smoke, description: 'Send a message to take a break',
+  usage: 'smoke') do |_event|
+  _event.respond(
+    "#{_event.user.username}" + " thinks it's time for a smoke"
+  )
+end
+
+bot.command(:channels, description: 'list channels', usage: 'channels') do |_event|
+  # _event.server.channels.map {
+8  # }
+  _event.respond(
+    "#{_event.server.channels.name}"
+  )
+end
+# End command definition
+
+# Run bon
 bot.run
