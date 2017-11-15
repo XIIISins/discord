@@ -83,7 +83,7 @@ bot.command(:diablo, description: 'Diablo builds, info and other stuff',
       func: _D3_Unknown_Class
     },{
       optn: ["Necromancer", "necro"],
-      func:_D3_Unknown_Class  
+      func: _D3_Unknown_Class  
     }]
 
     gclass = req.kind_of?(Array) ? req.join(" ") : req
