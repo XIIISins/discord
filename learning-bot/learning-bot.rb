@@ -103,7 +103,7 @@ bot.command(:diablo, description: 'Diablo builds, info and other stuff',
 end
 
 bot.command(:destiny, description: 'Destiny2 info',
-  usage: 'destiny <cmd>', min_args: 1) do |_event, *arg|
+  usage: 'destiny <cmd>') do |_event, *arg|
     _D2_GearGuide = 'http://dulfy.net/2017/11/01/destiny-2-power-progression-guide/'
     _D2_Args = [{
       arg: ["Power Guide", "PG"],
@@ -124,6 +124,29 @@ bot.command(:destiny, description: 'Destiny2 info',
   end
 end
 
+bot.command(:bdo, description: 'Information regarding Black Desert Online',
+  usage: 'bdo <command>') do |_event, *arg|
+  
+  args = arg.kind_of?(Array) ? arg.join(" ") : arg
+
+  _BDO_Args = [{
+    arg: ["test"],
+    func: "Test string"
+  }]
+
+  response = _BDO_Args.map { |a| a[:func] if args.match( Regexp.new(/\s?(#{a[:arg].join("|")})\s?/i) ) }.join(" ")
+
+  if response =~ /^\s*$/ || response.to_s.empty?
+    _event.respond(
+        "Unknown command, please use one of the following:\n" + 
+        _BDO_Args.map { |a| a[:arg].join(", ")}.join(", ")
+      )
+  else
+    _event.respond(response)
+  end
+end  
+
+
 bot.command(:smoke, description: 'Send a message to take a break',
   usage: 'smoke') do |_event|
   _event.respond(
@@ -132,12 +155,54 @@ bot.command(:smoke, description: 'Send a message to take a break',
 end
 
 bot.command(:channels, description: 'list channels', usage: 'channels') do |_event|
-  # _event.server.channels.map {
-8  # }
-  _event.respond(
-    "#{_event.server.channels.name}"
-  )
+  # _event.channel.name
+  # _event.respond(
+  #   "#{_event.server.channels}"
+  # )
 end
+
+# VoiceBOT Definition
+bot.command(:connect) do |_event|
+  # Determine if user is in a voice channel
+  channel = _event.user.voice_channel
+
+  next "You're not in a voice channel" unless channel
+  bot.voice_connect(channel)
+  "Connected to voice channel: #{channel.name}"
+end
+
+bot.command(:listmusic) do |_event|
+  _musicdir = File.dirname(__FILE__) + "/music"
+  _file_list = Dir.glob("#{_musicdir}" + "/*")
+  response = _file_list.kind_of?(Array) ? _file_list.join("\n ").gsub(/.*music\//, "") : _file_list
+
+  if response =~ /^\s*$/ || response.to_s.empty?
+    _event.respond("No music in " + _musicdir)
+  else
+    _event.respond("Music list:\n" + response)
+  end
+end
+
+bot.command(:play) do |_event, file, *arg|
+  # Example case:
+  # !play 
+  _M_Args = [{
+    arg: ["mp3"]
+  },{
+    arg: ["dca"]
+  }]
+
+  cmd = arg.kind_of?(Array) ? arg.join(" ") : arg
+
+  if file.match(/^.*\.mp3/i)
+    voice_bot.play_file(file)
+  elsif file.match(/^.*\.dca/i)
+    voice_bot.play_dca(file)
+  end
+      
+end
+
+
 # End command definition
 
 # Run bon
