@@ -2,14 +2,13 @@
 
 require 'discordrb'
 require 'base64'
+require 'dotenv'
 
-_token = File.read(File.dirname(__FILE__) + "/.token").gsub(/\n/,"")
+Dotenv.load('config/config.rb')
 
-bot = Discordrb::Commands::CommandBot.new(token: _token, prefix: '!') #, 
-    # advanced_functionality: false)
+bot = Discordrb::Commands::CommandBot.new(token: ENV['token'], prefix: '!',
+    advanced_functionality: false)
 rlimit = Discordrb::Commands::SimpleRateLimiter.new
-
-CreatorB = 'XIIISins'
 
 # Message responders
 bot.message(with_text: 'Ping!') do |_event|
@@ -18,18 +17,10 @@ end
 
 ## Put back the table
 rlimit.bucket :table, delay: 5
-bot.message(containing: ['(╯°□°）╯︵ ┻━┻', '(ﾉಥ益ಥ）ﾉ﻿ ┻━┻', '(ノಠ益ಠ)ノ彡┻━┻']
-    ) do |_event|
+bot.message(containing: [ENV['TABLE_FLIP1'], ENV['TABLE_FLIP2'], ENV['TABLE_FLIP3']]) do |_event|
   next if rlimit.rate_limited?(:table, event.channel)
-  _event.respond '┬─┬ノ( º _ ºノ)'
+  _event.respond ENV['TABLE_RESPONSE']
 end
-
-
-# Start command definition
-# bot.command(:command_name, description: '<description',
-#     usage: 'Useful info on how to use', min_args: 1) do |_event, var|
-#     # stuff here
-# end
 
 # Echo
 bot.bucket :echo, limit: 10, time_span: 60, delay: 6
@@ -47,28 +38,20 @@ bot.command(:repass, description: 'hash whatever string u pass as an argument',
     _event.respond(Base64.encode64(pw))
 end
 
+UnknownCommand = ENV['nocmdmsg']
+
 bot.command(:diablo, description: 'Diablo builds, info and other stuff',
     usage: 'diablo <class>', min_args: 1) do |_event, *req|
-    # Demon Hunter
-    _D3_DH_beginner_url = "http://www.diablofans.com/builds/96034-natalya-rain-of-vengeance-build"
-    _D3_DH_intermediate_url = "http://www.diablofans.com/builds/96089-unhallowed-multishot-t13-and-gr85-fast"
-    # Monk
-    _D3_MK_beginner_url = "http://www.diablofans.com/builds/96080-uliana-simple-gr70-video-tutorial"
-    _D3_MK_advanced_url = "http://www.diablofans.com/builds/96035-s12-swk-wol-solo-100-or-group"
-    _D3_MK_supp_url = "http://www.diablofans.com/builds/96224-support-monk"
-    
-    _D3_Unknown_Class = "I don't know guides for this class, If you know a good one let " +
-      CreatorB + " know."
-
+    _D3_Unknown_Class = ENV['D3_Unknown']
     _D3_Class = [{ 
       optn: ["Demon Hunter", "DH", ],
-      func: "Beginner = " + _D3_DH_beginner_url + 
-          "\nIntermediate = " + _D3_DH_intermediate_url 
+      func: "Beginner = " + ENV['D3_DH_Beginner'] + 
+          "\nIntermediate = " + ENV['D3_DH_Intermediate'] 
     },{ 
       optn: ["Monk"],
-      func: "Beginner = " + _D3_MK_beginner_url +
-          "\nSupport  = " + _D3_MK_supp_url +
-          "\nAdvanced = " + _D3_MK_advanced_url
+      func: "Beginner = " + ENV['D3_MK_Beginner'] +
+          "\nSupport  = " + ENV['D3_MK_Support'] +
+          "\nAdvanced = " + ENV['D3_MK_advanced_url']
     },{ 
       optn: ["Barbarian", "barb"],
       func: _D3_Unknown_Class
@@ -90,12 +73,9 @@ bot.command(:diablo, description: 'Diablo builds, info and other stuff',
 
     response = _D3_Class.map { |c| c[:func] if gclass.match( Regexp.new(/\s?(#{c[:optn].join("|")})\s?/i) ) }.join(" ")
 
-    # if response.to_s.empty?
-    # if response.match(/^[[:space:]]*$/)
     if response =~ /^\s*$/ || response.to_s.empty?
       _event.respond(
-        "Could not read class, please use one of the following:\n" + 
-        _D3_Class.map { |c| c[:optn].join(", ")}.join(", ")
+        UnknownCommand + _D3_Class.map { |c| c[:optn].join(", ")}.join(", ")
       )
     else 
       _event.respond(response)
@@ -104,10 +84,9 @@ end
 
 bot.command(:destiny, description: 'Destiny2 info',
   usage: 'destiny <cmd>') do |_event, *arg|
-    _D2_GearGuide = 'http://dulfy.net/2017/11/01/destiny-2-power-progression-guide/'
     _D2_Args = [{
       arg: ["Power Guide", "PG"],
-      func: "Power Progression guide: " + _D2_GearGuide
+      func: "Power Progression guide: " + ENV['D2_GearGuide']
     }]
     
     args = arg.kind_of?(Array) ? arg.join(" ") : arg
@@ -116,8 +95,7 @@ bot.command(:destiny, description: 'Destiny2 info',
 
     if response =~ /^\s*$/ || response.to_s.empty?
       _event.respond(
-        "Unknown command, please use one of the following:\n" + 
-        _D2_Args.map { |a| a[:arg].join(", ")}.join(", ")
+        UnknownCommand + _D2_Args.map { |a| a[:arg].join(", ")}.join(", ")
       )
     else
       _event.respond(response)
@@ -138,8 +116,7 @@ bot.command(:bdo, description: 'Information regarding Black Desert Online',
 
   if response =~ /^\s*$/ || response.to_s.empty?
     _event.respond(
-        "Unknown command, please use one of the following:\n" + 
-        _BDO_Args.map { |a| a[:arg].join(", ")}.join(", ")
+        UnknownCommand + _BDO_Args.map { |a| a[:arg].join(", ")}.join(", ")
       )
   else
     _event.respond(response)
@@ -154,13 +131,6 @@ bot.command(:smoke, description: 'Send a message to take a break',
   )
 end
 
-# bot.command(:channels, description: 'list channels', usage: 'channels') do |_event|
-#   # _event.channel.name
-#   # _event.respond(
-#   #   "#{_event.server.channels}"
-#   # )
-# end
-
 # VoiceBOT Definition
 bot.command(:connect) do |_event|
   # Determine if user is in a voice channel
@@ -172,21 +142,20 @@ bot.command(:connect) do |_event|
 end
 
 bot.command(:listmusic) do |_event|
-  _musicdir = File.dirname(__FILE__) + "/music"
+  _musicdir = ENV['musicdir']
+  # _musicdir = File.dirname(__FILE__) + "/#{ENV['musicdir']}"
   _file_list = Dir.glob("#{_musicdir}" + "/*")
   response = _file_list.kind_of?(Array) ? _file_list.join("\n ").gsub(/.*music\//, "") : _file_list
 
   if response =~ /^\s*$/ || response.to_s.empty?
-    _event.respond("No music in " + _musicdir)
+    _event.respond("No music in " + ENV['musicdir'])
   else
-    _event.respond("Music list:\n" + response)
+    _event.respond("Music dir: " + ENV['musicdir'] + "\nMusic list:\n" + response)
   end
 end
 
 bot.command(:play) do |_event, file|
-  # Example case:
-  # !play bla.mp3
-  _musicdir = File.dirname(__FILE__) + "/music/"
+  _musicdir = File.dirname(__FILE__) + "/#{ENV['musicdir']}"
   if file.match(/^.*\.mp3/i)
     voice_bot.play_file(_musicdir + file)
     _event.respond("Playing: " + file)
@@ -209,7 +178,6 @@ bot.command(:stop) do |_event|
   voice_bot.stop_playing
   _event.respond("Playback stopped")
 end
-
 
 # End command definition
 
