@@ -154,12 +154,12 @@ bot.command(:smoke, description: 'Send a message to take a break',
   )
 end
 
-bot.command(:channels, description: 'list channels', usage: 'channels') do |_event|
-  # _event.channel.name
-  # _event.respond(
-  #   "#{_event.server.channels}"
-  # )
-end
+# bot.command(:channels, description: 'list channels', usage: 'channels') do |_event|
+#   # _event.channel.name
+#   # _event.respond(
+#   #   "#{_event.server.channels}"
+#   # )
+# end
 
 # VoiceBOT Definition
 bot.command(:connect) do |_event|
@@ -183,23 +183,31 @@ bot.command(:listmusic) do |_event|
   end
 end
 
-bot.command(:play) do |_event, file, *arg|
+bot.command(:play) do |_event, file|
   # Example case:
-  # !play 
-  _M_Args = [{
-    arg: ["mp3"]
-  },{
-    arg: ["dca"]
-  }]
-
-  cmd = arg.kind_of?(Array) ? arg.join(" ") : arg
-
+  # !play bla.mp3
+  _musicdir = File.dirname(__FILE__) + "/music/"
   if file.match(/^.*\.mp3/i)
-    voice_bot.play_file(file)
+    voice_bot.play_file(_musicdir + file)
+    _event.respond("Playing: " + file)
   elsif file.match(/^.*\.dca/i)
-    voice_bot.play_dca(file)
+    voice_bot.play_dca(_musicdir + file)
+    _event.respond("Playing: " + file)
   end
-      
+end
+
+bot.command(:toggle_music) do |_event|
+  unless voice_bot.stream_time.to_s.strip.empty? 
+    voice_bot.pause 
+    _event.respond("Playback paused")
+  end
+    voice_bot.continue
+    _event.respond("Playback continue")
+end
+
+bot.command(:stop) do |_event|
+  voice_bot.stop_playing
+  _event.respond("Playback stopped")
 end
 
 
