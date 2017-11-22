@@ -46,12 +46,12 @@ bot.command(:diablo, description: 'Diablo builds, info and other stuff',
     _D3_Class = [{ 
       optn: ["Demon Hunter", "DH", ],
       func: "Beginner = " + ENV['D3_DH_Beginner'] + 
-          "\nIntermediate = " + ENV['D3_DH_Intermediate'] 
+        "\nIntermediate = " + ENV['D3_DH_Intermediate']
     },{ 
       optn: ["Monk"],
       func: "Beginner = " + ENV['D3_MK_Beginner'] +
-          "\nSupport  = " + ENV['D3_MK_Support'] +
-          "\nAdvanced = " + ENV['D3_MK_advanced_url']
+        "\nSupport  = " + ENV['D3_MK_Support'] +
+        "\nAdvanced = " + ENV['D3_MK_Advanced']
     },{ 
       optn: ["Barbarian", "barb"],
       func: _D3_Unknown_Class
