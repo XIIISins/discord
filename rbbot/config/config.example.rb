@@ -13,7 +13,7 @@ TABLE_RESPONSE = '┬─┬ノ( º _ ºノ)'
 musicdir = '$HOME/music/'
 
 # Diablo URL config
-D3_Unknown = 'I don't know guides for this class, If you know a good one let ENV['author'] know.'
+D3_Unknown = "I don't know guides for this class, If you know a good one let ENV['author'] know."
 
 D3_DH_Beginner = 'http://www.diablofans.com/builds/96034-natalya-rain-of-vengeance-build'
 D3_DH_Intermediate = 'http://www.diablofans.com/builds/96089-unhallowed-multishot-t13-and-gr85-fast'
